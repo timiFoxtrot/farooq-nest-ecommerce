@@ -9,6 +9,10 @@ import config from './common/config/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity } from './users/entities/user.entity';
 import { ProductEntity } from './products/entities/product.entity';
+import { JwtService } from '@nestjs/jwt';
+import { APP_GUARD } from '@nestjs/core';
+import { AuthGuard } from './auth/auth.guard';
+import { RoleGuard } from './auth/role.guard';
 
 @Module({
   imports: [
@@ -36,6 +40,17 @@ import { ProductEntity } from './products/entities/product.entity';
     AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    JwtService,
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard, // Add AuthGuard globally
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RoleGuard, // Add RoleGuard globally
+    },
+  ],
 })
 export class AppModule {}
