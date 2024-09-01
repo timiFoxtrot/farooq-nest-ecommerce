@@ -4,7 +4,7 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { Repository } from 'typeorm';
 import { ProductEntity } from './entities/product.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { USER_ROLES } from 'src/auth/auth.interfaces';
+import { IReqUser, USER_ROLES } from 'src/auth/auth.interfaces';
 // import { IReqUser, USER_ROLES } from 'src/auth/auth.interfaces';
 
 @Injectable()
@@ -13,7 +13,7 @@ export class ProductsService {
     @InjectRepository(ProductEntity)
     private productsRepository: Repository<ProductEntity>,
   ) {}
-  async create(productInput: CreateProductDto, user: any) {
+  async create(productInput: CreateProductDto, user: IReqUser) {
     const product = this.productsRepository.create({
       ...productInput,
       user_id: user.id,
@@ -61,7 +61,7 @@ export class ProductsService {
     return updatedProduct;
   }
 
-  async findAll(user: any) {
+  async findAll(user: IReqUser) {
     const query = user.role === USER_ROLES.USER ? { user_id: user.id } : {};
     const products = await this.productsRepository.find({
       where: query,
@@ -98,7 +98,7 @@ export class ProductsService {
     return userProduct;
   }
 
-  async update(user: any, id: string, updateProductDto: UpdateProductDto) {
+  async update(user: IReqUser, id: string, updateProductDto: UpdateProductDto) {
     const userProduct = await this.findOne(user.id, id);
 
     const productUpdate = { ...userProduct, ...updateProductDto };
