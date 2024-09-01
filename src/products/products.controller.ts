@@ -20,6 +20,7 @@ import { Roles } from 'src/auth/role.decorator';
 import { RequestWithUser, USER_ROLES } from 'src/auth/auth.interfaces';
 import { SkipAuth } from 'src/auth/auth.decorator';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { QueryDto } from './dto/query-products.dto';
 
 @ApiTags('Products')
 @Controller('products')
@@ -56,9 +57,9 @@ export class ProductsController {
   @Roles([USER_ROLES.USER, USER_ROLES.ADMIN])
   @ApiOperation({ summary: 'Fetch products' })
   @ApiResponse({ status: 200, description: 'Products fetched successfully' })
-  async findAll(@Req() req: RequestWithUser) {
+  async findAll(@Query() query: QueryDto, @Req() req: RequestWithUser) {
     try {
-      const response = await this.productsService.findAll(req.user);
+      const response = await this.productsService.findAll(query, req.user);
       return SuccessResponse('Products fetched successfully', {
         data: response,
       });
@@ -74,9 +75,9 @@ export class ProductsController {
   @SkipAuth()
   @ApiOperation({ summary: 'Fetch approved products' })
   @ApiResponse({ status: 200, description: 'Approved products fetched successfully' })
-  async getApprovedProducts() {
+  async getApprovedProducts(@Query() query: QueryDto) {
     try {
-      const response = await this.productsService.getApprovedProducts();
+      const response = await this.productsService.getApprovedProducts(query);
       return SuccessResponse('Approved product fetched successfully', {
         data: response,
       });
@@ -99,9 +100,6 @@ export class ProductsController {
     @Req() req: RequestWithUser,
   ) {
     try {
-      // if (req.user.role !== USER_ROLES.ADMIN) {
-      //   delete updateProductDto.isApproved;
-      // }
       if (req.body.hasOwnProperty('isApproved')) {
         throw new HttpException(
           'You are not allowed to update this field',

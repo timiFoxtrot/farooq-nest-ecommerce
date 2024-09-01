@@ -5,6 +5,9 @@ import { Repository } from 'typeorm';
 import { ProductEntity } from './entities/product.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { IReqUser, USER_ROLES } from 'src/auth/auth.interfaces';
+import { paginate } from 'src/common/pagination/paginate';
+import { defaultPage, defaultSize } from 'src/utils/constant-util';
+import { QueryDto } from './dto/query-products.dto';
 // import { IReqUser, USER_ROLES } from 'src/auth/auth.interfaces';
 
 @Injectable()
@@ -29,8 +32,8 @@ export class ProductsService {
     return createdProduct;
   }
 
-  async getApprovedProducts() {
-    const approvedProducts = await this.productsRepository.find({
+  async getApprovedProducts(searchParams: QueryDto) {
+    const options = {
       where: {
         isApproved: true,
       },
@@ -49,9 +52,22 @@ export class ProductsService {
       relations: {
         user: true,
       },
-    });
+    };
 
-    return approvedProducts;
+    if (searchParams.paginate === 'true') {
+      const data = await paginate<ProductEntity>(
+        this.productsRepository,
+        {
+          size: Number(searchParams?.limit) || defaultSize,
+          page: Number(searchParams?.page) || defaultPage,
+        },
+        options,
+      );
+      return data;
+    } else {
+      const data = await this.productsRepository.find(options);
+      return { data };
+    }
   }
 
   async updateProductApprovalStatus(id: string, approve: boolean) {
@@ -61,9 +77,9 @@ export class ProductsService {
     return updatedProduct;
   }
 
-  async findAll(user: IReqUser) {
+  async findAll(searchParams: QueryDto, user: IReqUser) {
     const query = user.role === USER_ROLES.USER ? { user_id: user.id } : {};
-    const products = await this.productsRepository.find({
+    const options = {
       where: query,
       select: {
         id: true,
@@ -80,8 +96,22 @@ export class ProductsService {
       relations: {
         user: true,
       },
-    });
-    return products;
+    };
+
+    if (searchParams.paginate === 'true') {
+      const data = await paginate<ProductEntity>(
+        this.productsRepository,
+        {
+          size: Number(searchParams?.limit) || defaultSize,
+          page: Number(searchParams?.page) || defaultPage,
+        },
+        options,
+      );
+      return data;
+    } else {
+      const data = await this.productsRepository.find(options);
+      return { data };
+    }
   }
 
   async findOne(user_id: string, id: string) {
@@ -111,4 +141,3 @@ export class ProductsService {
     return deletedProduct;
   }
 }
-

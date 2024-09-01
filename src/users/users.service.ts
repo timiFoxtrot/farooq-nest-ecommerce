@@ -1,12 +1,12 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './entities/user.entity';
 import { FindOptionsWhere, Repository } from 'typeorm';
 import { generateHash } from 'src/common/utils';
 import { USER_STATUS } from './interfaces/users.enum';
 import { SearchDto } from './dto/query-user.dto';
+import { IReqUser, USER_ROLES } from 'src/auth/auth.interfaces';
 
 @Injectable()
 export class UsersService {
@@ -76,5 +76,16 @@ export class UsersService {
     const status = ban ? USER_STATUS.BANNED : USER_STATUS.ACTIVE;
     const updatedUser = await this.usersRepository.update(id, { status });
     return updatedUser;
+  }
+
+  async updateUserRole(user_id: string, role: USER_ROLES, user: IReqUser) {
+    if(user_id === user.id) {
+      throw new HttpException(
+        'You cannot update your own role',
+        HttpStatus.EXPECTATION_FAILED,
+      );
+    }
+    const updatedUser = await this.usersRepository.update(user_id, {role})
+    return updatedUser
   }
 }

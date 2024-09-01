@@ -8,6 +8,7 @@ import {
   HttpStatus,
   Query,
   ParseBoolPipe,
+  Req,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -15,8 +16,9 @@ import { ErrorResponse, SuccessResponse } from 'src/common/helpers/response';
 import { SearchDto } from './dto/query-user.dto';
 import { SkipAuth } from 'src/auth/auth.decorator';
 import { Roles } from 'src/auth/role.decorator';
-import { USER_ROLES } from 'src/auth/auth.interfaces';
+import { RequestWithUser, USER_ROLES } from 'src/auth/auth.interfaces';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { UpdateUserRoleDto } from './dto/update-user.dto';
 
 @ApiTags('Users')
 @Controller('users')
@@ -65,7 +67,6 @@ export class UsersController {
     @Query('ban', ParseBoolPipe) ban: boolean,
   ) {
     try {
-      console.log({ ban });
       const response = await this.usersService.updateUserStatus(id, ban);
       return SuccessResponse('Users status updated successfully', {
         data: response,
@@ -73,6 +74,25 @@ export class UsersController {
     } catch (error) {
       throw ErrorResponse(
         error.response || 'Unable to update user status',
+        error.status || HttpStatus.UNPROCESSABLE_ENTITY,
+      );
+    }
+  }
+
+  @Patch('/role/:id')
+  @Roles([USER_ROLES.ADMIN])
+  @ApiOperation({summary: 'Update user\'s role'})
+  @ApiBody({ type: UpdateUserRoleDto })
+  @ApiResponse({ status: 200, description: 'User role updated successfully' })
+  async updateUserRole(@Param('id') id: string, @Body() body: UpdateUserRoleDto, @Req() req: RequestWithUser) {
+    try {
+      const response = await this.usersService.updateUserRole(id, body.role, req.user)
+      return SuccessResponse('User role updated successfully', {
+        data: response,
+      });
+    } catch (error) {
+      throw ErrorResponse(
+        error.response || 'Unable to update user role',
         error.status || HttpStatus.UNPROCESSABLE_ENTITY,
       );
     }
