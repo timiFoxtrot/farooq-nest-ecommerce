@@ -19,9 +19,10 @@ import { ErrorResponse, SuccessResponse } from 'src/common/helpers/response';
 import { Roles } from 'src/auth/role.decorator';
 import { RequestWithUser, USER_ROLES } from 'src/auth/auth.interfaces';
 import { SkipAuth } from 'src/auth/auth.decorator';
-import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { QueryDto } from './dto/query-products.dto';
 
+@ApiBearerAuth()
 @ApiTags('Products')
 @Controller('products')
 export class ProductsController {

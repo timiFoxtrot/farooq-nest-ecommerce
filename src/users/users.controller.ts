@@ -17,9 +17,10 @@ import { SearchDto } from './dto/query-user.dto';
 import { SkipAuth } from 'src/auth/auth.decorator';
 import { Roles } from 'src/auth/role.decorator';
 import { RequestWithUser, USER_ROLES } from 'src/auth/auth.interfaces';
-import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UpdateUserRoleDto } from './dto/update-user.dto';
 
+@ApiBearerAuth()
 @ApiTags('Users')
 @Controller('users')
 export class UsersController {

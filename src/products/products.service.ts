@@ -94,8 +94,8 @@ export class ProductsService {
         },
       },
       relations: {
-        user: true,
-      },
+        user: {}
+      }
     };
 
     if (searchParams.paginate === 'true') {
