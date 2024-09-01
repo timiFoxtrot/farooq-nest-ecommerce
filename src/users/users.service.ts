@@ -15,13 +15,10 @@ export class UsersService {
     private usersRepository: Repository<UserEntity>,
   ) {}
   async create(userInput: CreateUserDto) {
-    const existingUser = await this.findUserByEmail(userInput.email)
-    
+    const existingUser = await this.findUserByEmail(userInput.email);
+
     if (existingUser) {
-      throw new HttpException(
-        'Email already taken',
-        HttpStatus.BAD_REQUEST,
-      );
+      throw new HttpException('Email already taken', HttpStatus.BAD_REQUEST);
     }
 
     const hashedPassword = generateHash(userInput.password);
@@ -46,7 +43,7 @@ export class UsersService {
         email,
       },
     });
-    return user
+    return user;
   }
 
   async findActiveUser(findData: FindOptionsWhere<UserEntity>) {
@@ -79,14 +76,14 @@ export class UsersService {
   }
 
   async updateUserRole(user_id: string, role: USER_ROLES, user: IReqUser) {
-    if(user_id === user.id) {
+    if (user_id === user.id) {
       throw new HttpException(
         'You cannot update your own role',
         HttpStatus.EXPECTATION_FAILED,
       );
     }
-    const updatedUser = await this.usersRepository.update(user_id, {role})
-    return updatedUser
+    const updatedUser = await this.usersRepository.update(user_id, { role });
+    return updatedUser;
   }
 
   async createAdminUser() {
@@ -94,20 +91,20 @@ export class UsersService {
       name: process.env.ADMIN_NAME,
       password: generateHash(process.env.ADMIN_PASSWORD),
       email: process.env.ADMIN_EMAIL,
-      role: USER_ROLES.ADMIN
-    }
+      role: USER_ROLES.ADMIN,
+    };
 
-    console.log({payload})
-
-    const existingAdmin = await this.usersRepository.findOne({where: {email: payload.email}})
-    if(existingAdmin) {
+    const existingAdmin = await this.usersRepository.findOne({
+      where: { email: payload.email },
+    });
+    if (existingAdmin) {
       throw new HttpException(
         'Admin account already exists',
         HttpStatus.EXPECTATION_FAILED,
       );
     }
 
-    const adminUser = this.usersRepository.create(payload)
-    return this.usersRepository.save(adminUser)
+    const adminUser = this.usersRepository.create(payload);
+    return this.usersRepository.save(adminUser);
   }
 }
