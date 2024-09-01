@@ -94,7 +94,7 @@ export class ProductsService {
         },
       },
       relations: {
-        user: {}
+        user: true
       }
     };
 
