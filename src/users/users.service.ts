@@ -20,7 +20,7 @@ export class UsersService {
     if (existingUser) {
       throw new HttpException(
         'Email already taken',
-        HttpStatus.EXPECTATION_FAILED,
+        HttpStatus.BAD_REQUEST,
       );
     }
 
