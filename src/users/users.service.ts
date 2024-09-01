@@ -88,4 +88,26 @@ export class UsersService {
     const updatedUser = await this.usersRepository.update(user_id, {role})
     return updatedUser
   }
+
+  async createAdminUser() {
+    const payload = {
+      name: process.env.ADMIN_NAME,
+      password: generateHash(process.env.ADMIN_PASSWORD),
+      email: process.env.ADMIN_EMAIL,
+      role: USER_ROLES.ADMIN
+    }
+
+    console.log({payload})
+
+    const existingAdmin = await this.usersRepository.findOne({where: {email: payload.email}})
+    if(existingAdmin) {
+      throw new HttpException(
+        'Admin account already exists',
+        HttpStatus.EXPECTATION_FAILED,
+      );
+    }
+
+    const adminUser = this.usersRepository.create(payload)
+    return this.usersRepository.save(adminUser)
+  }
 }

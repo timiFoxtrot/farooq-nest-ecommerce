@@ -167,7 +167,6 @@ export class ProductsController {
     @Query('approve', ParseBoolPipe) approve: boolean,
   ) {
     try {
-      console.log({ approve });
       const response = await this.productsService.updateProductApprovalStatus(
         id,
         approve,

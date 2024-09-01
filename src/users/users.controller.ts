@@ -97,4 +97,20 @@ export class UsersController {
       );
     }
   }
+
+  @Post('admin')
+  @SkipAuth()
+  @ApiOperation({summary: 'Create admin user'})
+  @ApiResponse({ status: 201, description: 'Admin user successfully created' })
+  async createAdminUser() {
+    try {
+      const response = await this.usersService.createAdminUser();
+      return SuccessResponse('Admin User Created Successfully', { data: response });
+    } catch (error) {
+      throw ErrorResponse(
+        error.message || 'Unable to create admin user',
+        error.status || HttpStatus.UNPROCESSABLE_ENTITY,
+      );
+    }
+  }
 }
