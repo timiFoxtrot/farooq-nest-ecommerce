@@ -19,13 +19,18 @@ import { ErrorResponse, SuccessResponse } from 'src/common/helpers/response';
 import { Roles } from 'src/auth/role.decorator';
 import { RequestWithUser, USER_ROLES } from 'src/auth/auth.interfaces';
 import { SkipAuth } from 'src/auth/auth.decorator';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Products')
 @Controller('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Post()
   @Roles([USER_ROLES.USER])
+  @ApiOperation({ summary: 'Create a product' })
+  @ApiBody({ type: CreateProductDto })
+  @ApiResponse({ status: 201, description: 'The created product' })
   async create(
     @Body() createProductDto: CreateProductDto,
     @Req() req: RequestWithUser,
@@ -49,6 +54,8 @@ export class ProductsController {
 
   @Get()
   @Roles([USER_ROLES.USER, USER_ROLES.ADMIN])
+  @ApiOperation({ summary: 'Fetch products' })
+  @ApiResponse({ status: 200, description: 'Products fetched successfully' })
   async findAll(@Req() req: RequestWithUser) {
     try {
       const response = await this.productsService.findAll(req.user);
@@ -65,6 +72,8 @@ export class ProductsController {
 
   @Get('approved')
   @SkipAuth()
+  @ApiOperation({ summary: 'Fetch approved products' })
+  @ApiResponse({ status: 200, description: 'Approved products fetched successfully' })
   async getApprovedProducts() {
     try {
       const response = await this.productsService.getApprovedProducts();
@@ -81,6 +90,9 @@ export class ProductsController {
 
   @Patch(':id')
   @Roles([USER_ROLES.USER])
+  @ApiOperation({ summary: 'Update product by owner' })
+  @ApiBody({type: UpdateProductDto})
+  @ApiResponse({ status: 200, description: 'Products updated successfully' })
   async update(
     @Param('id') id: string,
     @Body() updateProductDto: UpdateProductDto,
@@ -114,6 +126,8 @@ export class ProductsController {
 
   @Get(':id')
   @Roles([USER_ROLES.USER, USER_ROLES.ADMIN])
+  @ApiOperation({ summary: 'Fetch single product' })
+  @ApiResponse({ status: 200, description: 'Product fetched successfully' })
   async findOne(@Param('id') id: string) {
     try {
       const response = await this.productsService.findOne('query', id);
@@ -130,6 +144,8 @@ export class ProductsController {
 
   @Delete(':id')
   @Roles([USER_ROLES.USER, USER_ROLES.ADMIN])
+  @ApiOperation({ summary: 'Delete product by owner' })
+  @ApiResponse({ status: 200, description: 'Product deleted successfully' })
   async remove(@Param('id') id: string) {
     try {
       const response = await this.productsService.remove(id);
@@ -146,6 +162,8 @@ export class ProductsController {
 
   @Patch('/approval/:id')
   @Roles([USER_ROLES.ADMIN])
+  @ApiOperation({ summary: 'Approve/Disapprove product by admin' })
+  @ApiResponse({ status: 200, description: 'Product status updated successfully' })
   async updateProductApprovalStatus(
     @Param('id') id: string,
     @Query('approve', ParseBoolPipe) approve: boolean,

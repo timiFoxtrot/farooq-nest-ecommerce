@@ -25,6 +25,9 @@ export class UsersController {
 
   @Post()
   @SkipAuth()
+  @ApiOperation({summary: 'Create a user'})
+  @ApiBody({ type: CreateUserDto })
+  @ApiResponse({ status: 201, description: 'The created user' })
   async create(@Body() createUserDto: CreateUserDto) {
     try {
       const response = await this.usersService.create(createUserDto);
@@ -39,6 +42,8 @@ export class UsersController {
 
   @Get()
   @Roles([USER_ROLES.ADMIN])
+  @ApiOperation({summary: 'Fetch all user'})
+  @ApiResponse({ status: 200, description: 'Users fetched successfully' })
   async findAll(@Query() query: SearchDto) {
     try {
       const response = await this.usersService.findAll(query);
@@ -53,6 +58,8 @@ export class UsersController {
 
   @Patch(':id')
   @Roles([USER_ROLES.ADMIN])
+  @ApiOperation({summary: 'Update user \'ban\' status'})
+  @ApiResponse({ status: 200, description: 'User status updated successfully' })
   async updateUserStatus(
     @Param('id') id: string,
     @Query('ban', ParseBoolPipe) ban: boolean,
