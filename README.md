@@ -33,7 +33,7 @@ This is a simple ecommerce API that uses the NestJS framework.
 
 ```bash
 $ git clone https://github.com/timiFoxtrot/farooq-nest-ecommerce.git
-$ cd farooq-ecommerce-service
+$ cd farooq-nest-ecommerce
 ```
 
 ## Install dependencies
