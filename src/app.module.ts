@@ -13,6 +13,7 @@ import { JwtService } from '@nestjs/jwt';
 import { APP_GUARD } from '@nestjs/core';
 import { AuthGuard } from './auth/auth.guard';
 import { RoleGuard } from './auth/role.guard';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
@@ -35,6 +36,10 @@ import { RoleGuard } from './auth/role.guard';
       }),
       inject: [ConfigService],
     }),
+    ThrottlerModule.forRoot([{
+      ttl: 60000,
+      limit: 10,
+    }]),
     UsersModule,
     ProductsModule,
     AuthModule,
@@ -51,6 +56,10 @@ import { RoleGuard } from './auth/role.guard';
       provide: APP_GUARD,
       useClass: RoleGuard, // Add RoleGuard globally
     },
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard
+    }    
   ],
 })
 export class AppModule {}
