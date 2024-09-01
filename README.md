@@ -25,7 +25,7 @@
 ## Description
 
 This is a simple ecommerce API that uses the NestJS framework.
-- It allows users onboard, get athenticated and create products.
+- It allows users onboard, get athenticated and manage their products.
 - It also allows unauthenticated users to view list of approved products.
 - A dedicated endpoint has been created to allow admin user account creation.
 
