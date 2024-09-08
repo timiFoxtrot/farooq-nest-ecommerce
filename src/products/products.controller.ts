@@ -101,7 +101,7 @@ export class ProductsController {
     @Req() req: RequestWithUser,
   ) {
     try {
-      if (req.body.hasOwnProperty('isApproved')) {
+      if (updateProductDto.hasOwnProperty('isApproved')) {
         throw new HttpException(
           'You are not allowed to update this field',
           HttpStatus.FORBIDDEN,
